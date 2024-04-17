@@ -1,4 +1,4 @@
-const verificationTemplate = (otp) => {
+function verificationTemplate(otp) {
   return `<!DOCTYPE html>
       <html>
       <head>
@@ -115,7 +115,7 @@ const verificationTemplate = (otp) => {
               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                 <tr>
                   <td align="center" valign="top" style="padding: 36px 24px;">
-                      <img src="${process.env.NEXT_PUBLIC_DOMAIN}/images/logo.png" alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
+                      <img src="${process.env.DOMAIN}/images/logo.png" alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
                   </td>
                 </tr>
               </table>
@@ -165,7 +165,7 @@ const verificationTemplate = (otp) => {
                 <!-- start copy -->
                 <tr>
                   <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                    <p style="margin: 0;">Please click on the button given below to continue with iNotes.<br /><br />You will be redirected to iNotes for verification.<br/>The otp is valid only for 10 minutes.<br /><br />If you didn't create an account with <strong>iNotes</strong>, you can safely delete this email.</p>
+                    <p style="margin: 0;">Please verify your Email Address by using the otp given below to continue with iNotes.<br /><br/>The otp is valid only for 10 minutes.<br /><br />If you didn't create an account with <strong>iNotes</strong>, you can safely delete this email.</p>
                   </td>
                 </tr>
                 <!-- end copy -->
@@ -250,6 +250,6 @@ const verificationTemplate = (otp) => {
       
       </body>
       </html>`;
-};
+}
 
-export default verificationTemplate;
+module.exports = verificationTemplate;

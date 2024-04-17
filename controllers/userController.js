@@ -1,7 +1,9 @@
 const EmailVerification = require("../models/emailVerificationModel");
 const User = require("../models/userModel");
+const verificationTemplate = require("../utils/emailVerificationTemplate");
 const generateOTP = require("../utils/generateOTP");
 const bcrypt = require("bcryptjs");
+const sendEmail = require("../utils/sendEmail");
 
 exports.userLogin = async (req, res) => {
   try {
@@ -96,6 +98,16 @@ exports.userSignUp = async (req, res) => {
     });
 
     await verificationToken.save();
+
+    const mailOptions = {
+      from: "iNotes@official.com",
+      to: savedUser.email,
+      subject: "Verify your Email Address",
+      text: `Verify your Email Address to create an account with iNotes.\nThe otp for the email address is ${otp}.\nThe otp is valid only for 10 minutes.`,
+      html: verificationTemplate(otp),
+    };
+
+    await sendEmail(mailOptions);
 
     return res.status(200).json({
       success: true,
