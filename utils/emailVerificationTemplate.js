@@ -252,4 +252,4 @@ function verificationTemplate(otp) {
       </html>`;
 }
 
-module.exports = verificationTemplate;
+export default verificationTemplate;

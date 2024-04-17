@@ -1,26 +1,29 @@
-const { Schema, models, model } = require("mongoose");
+import mongoose from "mongoose";
 
-const NotesSchema = new Schema({
+const NotesSchema = new mongoose.Schema(
+  {
     userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     title: {
-        type: String,
-        trim: true
+      type: String,
+      trim: true,
     },
     label: {
-        type: String,
-        trim: true
+      type: String,
+      trim: true,
     },
     content: {
-        type: String,
-        trim: true,
-        required: true
+      type: String,
+      trim: true,
+      required: true,
     },
-}, {timestamps: true});
+  },
+  { timestamps: true }
+);
 
-const Notes = models.Notes || model("Notes", NotesSchema);
+const Notes = mongoose.models.Notes || mongoose.model("Notes", NotesSchema);
 
-module.exports = Notes;
+export default Notes;

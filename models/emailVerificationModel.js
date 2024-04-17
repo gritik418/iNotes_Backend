@@ -1,10 +1,10 @@
-const { Schema, models, model } = require("mongoose");
-const bcrypt = require("bcryptjs");
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-const EmailVerificationSchema = new Schema(
+const EmailVerificationSchema = new mongoose.Schema(
   {
     userId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -31,7 +31,7 @@ EmailVerificationSchema.pre("save", async function (next) {
 });
 
 const EmailVerification =
-  models.EmailVerification ||
-  model("EmailVerification", EmailVerificationSchema);
+  mongoose.models.EmailVerification ||
+  mongoose.model("EmailVerification", EmailVerificationSchema);
 
-module.exports = EmailVerification;
+export default EmailVerification;

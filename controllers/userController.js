@@ -1,23 +1,33 @@
-const EmailVerification = require("../models/emailVerificationModel");
-const User = require("../models/userModel");
-const verificationTemplate = require("../utils/emailVerificationTemplate");
-const generateOTP = require("../utils/generateOTP");
-const bcrypt = require("bcryptjs");
-const sendEmail = require("../utils/sendEmail");
+import EmailVerification from "../models/emailVerificationModel.js";
+import User from "../models/userModel.js";
+import verificationTemplate from "../utils/emailVerificationTemplate.js";
+import generateOTP from "../utils/generateOTP.js";
+import bcrypt from "bcryptjs";
+import sendEmail from "../utils/sendEmail.js";
+import vine, { errors } from "@vinejs/vine";
+import loginSchema from "../validators/loginSchema.js";
+import { ErrorReporter } from "../validators/ErrorReporter.js";
+import signupSchema from "../validators/signupSchema.js";
 
-exports.userLogin = async (req, res) => {
+vine.errorReporter = () => new ErrorReporter();
+
+export const userLogin = async (req, res) => {
   try {
     const data = req.body;
+    const output = await vine.validate({
+      schema: loginSchema,
+      data,
+    });
 
     const user = await User.findOne({
-      $or: [{ email: data.email }, { username: data.email }],
+      $or: [{ email: output.email }, { username: output.email }],
     });
 
     if (
       !user ||
       !user.email_verified ||
       user.provider != "credentials" ||
-      !data.password
+      !output.password
     ) {
       return res.status(401).json({
         success: false,
@@ -26,7 +36,7 @@ exports.userLogin = async (req, res) => {
       });
     }
 
-    const verify = await bcrypt.compare(data.password, user.password);
+    const verify = await bcrypt.compare(output.password, user.password);
 
     if (!verify) {
       return res.status(401).json({
@@ -48,6 +58,9 @@ exports.userLogin = async (req, res) => {
       message: "Logged In Successfully..",
     });
   } catch (error) {
+    if (error instanceof errors.E_VALIDATION_ERROR) {
+      console.log(error.messages);
+    }
     return res.status(500).json({
       success: false,
       message: "Server Error",
@@ -56,12 +69,16 @@ exports.userLogin = async (req, res) => {
   }
 };
 
-exports.userSignUp = async (req, res) => {
+export const userSignUp = async (req, res) => {
   try {
     const data = req.body;
+    const output = await vine.validate({
+      schema: signupSchema,
+      data,
+    });
 
     const checkExisting = await User.findOne({
-      $or: [{ email: data.email }, { username: data.username }],
+      $or: [{ email: output.email }, { username: output.username }],
     });
 
     if (checkExisting) {
@@ -78,13 +95,13 @@ exports.userSignUp = async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(data.password, salt);
+    const hashedPassword = await bcrypt.hash(output.password, salt);
 
     const user = new User({
-      first_name: data.first_name,
-      last_name: data.lastname || "",
-      username: data.username,
-      email: data.email,
+      first_name: output.first_name,
+      last_name: output.lastname || "",
+      username: output.username,
+      email: output.email,
       password: hashedPassword,
     });
 
@@ -115,6 +132,9 @@ exports.userSignUp = async (req, res) => {
       message: "Email sent.",
     });
   } catch (error) {
+    if (error instanceof errors.E_VALIDATION_ERROR) {
+      console.log(error.messages);
+    }
     return res.status(500).json({
       success: false,
       message: "Server Error",
