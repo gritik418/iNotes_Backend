@@ -1,9 +1,10 @@
 import "dotenv/config";
+import path from "path";
+import cors from "cors";
 import express from "express";
 import connectToDB from "./database/mongoose.config.js";
-import path from "path";
 import userRoutes from "./routes/userRoutes.js";
-import cors from "cors";
+import notesRoutes from "./routes/notesRoutes.js";
 
 connectToDB();
 
@@ -22,6 +23,7 @@ app.use(express.static(staticPath));
 app.use(express.json());
 
 app.use("/api/user", userRoutes);
+app.use("/api/notes", notesRoutes);
 
 app.listen(PORT, () => {
   console.log(`App served at: http://localhost:${PORT}`);
