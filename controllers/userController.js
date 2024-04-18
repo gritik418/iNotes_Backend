@@ -259,3 +259,36 @@ export const updateAvatar = async (req, res) => {
     });
   }
 };
+
+export const updateUserInfo = async (req, res) => {
+  try {
+    const data = req.body;
+
+    if (data.username || data.email || data.password) {
+      return res.status(401).json({
+        success: false,
+        status: 400,
+        message: "Username or email cannot be updated.",
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(req.body.id, {
+      $set: data,
+    });
+
+    const updatedUser = await user.save();
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: "User details updated.",
+      updatedUser,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      status: 400,
+      message: "Server Error.",
+    });
+  }
+};

@@ -1,5 +1,6 @@
 import {
   updateAvatar,
+  updateUserInfo,
   userLogin,
   userSignUp,
   verifyEmail,
@@ -8,7 +9,6 @@ import {
 import express from "express";
 import authenticate from "../middlewares/authenticate.js";
 import upload from "../services/multerService.js";
-import User from "../models/userModel.js";
 
 const router = express.Router();
 
@@ -19,5 +19,7 @@ router.post("/signup", userSignUp);
 router.post("/verify", verifyEmail);
 
 router.patch("/avatar", authenticate, upload.single("avatar"), updateAvatar);
+
+router.patch("/", authenticate, updateUserInfo);
 
 export default router;
