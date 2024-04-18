@@ -1,10 +1,9 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import express from "express";
 import connectToDB from "./database/mongoose.config.js";
 import path from "path";
 import userRoutes from "./routes/userRoutes.js";
 
-dotenv.config();
 connectToDB();
 
 const app = express();

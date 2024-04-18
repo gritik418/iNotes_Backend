@@ -112,7 +112,7 @@ export const userSignUp = async (req, res) => {
 
     const savedUser = await user.save();
 
-    const otp = generateOTP();
+    const otp = await generateOTP();
 
     const verificationToken = new EmailVerification({
       userId: savedUser._id,
@@ -123,7 +123,7 @@ export const userSignUp = async (req, res) => {
 
     const mailOptions = {
       from: "iNotes@official.com",
-      to: savedUser.email,
+      to: output.email,
       subject: "Verify your Email Address",
       text: `Verify your Email Address to create an account with iNotes.\nThe otp for the email address is ${otp}.\nThe otp is valid only for 10 minutes.`,
       html: verificationTemplate(otp),
@@ -175,6 +175,8 @@ export const verifyEmail = async (req, res) => {
     });
 
     if (!verificationToken) {
+      await User.findOneAndDelete({ email: output.email });
+
       return res.status(401).json({
         success: false,
         status: 400,
@@ -188,12 +190,20 @@ export const verifyEmail = async (req, res) => {
     );
 
     if (!verifyToken) {
+      await User.findOneAndDelete({ email: output.email });
+
       return res.status(401).json({
         success: false,
         status: 400,
         message: "Invalid OTP.",
       });
     }
+
+    await User.findByIdAndUpdate(user._id, {
+      $set: { email_verified: true },
+    });
+
+    await EmailVerification.findOneAndDelete({ userId: user._id });
 
     const token = await user.generateAuthToken({
       id: user._id,
