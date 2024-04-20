@@ -15,6 +15,15 @@ vine.errorReporter = () => new ErrorReporter();
 export const userLogin = async (req, res) => {
   try {
     const data = req.body;
+
+    if (!data.email || data.email === "") {
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        errors: { email: "Email field is required." },
+      });
+    }
+
     const output = await vine.validate({
       schema: loginSchema,
       data,
